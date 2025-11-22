@@ -1,9 +1,11 @@
 ﻿using GymManagmentBLL.Services.Interfaces;
 using GymManagmentDAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagmentPL.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IAnalyticsService _analyticsService;

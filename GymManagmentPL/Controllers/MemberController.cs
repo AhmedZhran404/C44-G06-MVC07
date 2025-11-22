@@ -1,9 +1,11 @@
 ﻿using GymManagmentBLL.Services.Interfaces;
 using GymManagmentBLL.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagmentPL.Controllers
 {
+    [Authorize(Roles = "SuperAdmin")]
     public class MemberController : Controller
     {
         private readonly IMemberService _memberService;
@@ -73,9 +75,7 @@ namespace GymManagmentPL.Controllers
 
         public ActionResult Create()
         {
-
             return View();
-
         }
 
         [HttpPost]

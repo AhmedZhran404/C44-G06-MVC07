@@ -12,14 +12,16 @@ namespace GymManagmentDAL.Repositories.Classes
     public class UnitOfWork : IUnitOfWork
     {
         private readonly GymDbContext _context;
-
         private readonly Dictionary<string, object> repositories = [];
         public ISessionRepository SessionRepository { get; set; }
+        public IMembershipRepository MembershipRepository { get; set; }
 
-        public UnitOfWork(GymDbContext context , ISessionRepository sessionRepository)
+        public UnitOfWork(GymDbContext context , ISessionRepository sessionRepository , IMembershipRepository membershipRepository)
         {
             this._context = context;
             SessionRepository = sessionRepository;
+            MembershipRepository = membershipRepository;
+            
         }
 
 
@@ -42,6 +44,16 @@ namespace GymManagmentDAL.Repositories.Classes
         public int SaveChanges()
         {
           return  _context.SaveChanges();
+        }
+
+        IGenericRepository<TEntity> IUnitOfWork.GetRepository<TEntity>()
+        {
+            throw new NotImplementedException();
+        }
+
+        int IUnitOfWork.SaveChanges()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -21,8 +21,8 @@ namespace GymManagmentDAL.Entities
 
     public class Member : GymUser
     {
-       
-        public string? Photo { get; set; }
+
+        public string Photo { get; set; } = null!;
 
         public HealthRecord HealthRecord { get; set; } = null!;
 

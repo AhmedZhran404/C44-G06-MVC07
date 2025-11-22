@@ -1,4 +1,5 @@
-﻿using GymManagmentBLL.Services.Interfaces;
+﻿using GymManagmentBLL.Services.AttachmentService;
+using GymManagmentBLL.Services.Interfaces;
 using GymManagmentBLL.ViewModels;
 using GymManagmentDAL.Entities;
 using GymManagmentDAL.Repositories.Interfaces;
@@ -13,11 +14,12 @@ namespace GymManagmentBLL.Services.Classes
     public class MemberService : IMemberService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAttachmentService _attachmentService;
 
-
-        public MemberService(IUnitOfWork unitOfWork)
+        public MemberService(IUnitOfWork unitOfWork , IAttachmentService attachmentService)
         {
             this._unitOfWork = unitOfWork;
+            this._attachmentService = attachmentService;
         }
 
         public bool CreateMember(CreateMemberViewModel model)
@@ -28,6 +30,10 @@ namespace GymManagmentBLL.Services.Classes
                 {
                     return false;
                 }
+
+                var photoName = _attachmentService.Upload("members", model.PhotoFile);
+                if (string.IsNullOrEmpty(photoName)) return false;
+
                 var member = new Member
                 {
                     Name = model.Name,
@@ -51,9 +57,20 @@ namespace GymManagmentBLL.Services.Classes
 
                 };
 
+                member.Photo = photoName;
+
                 _unitOfWork.GetRepository<Member>().Add(member);
 
-                return _unitOfWork.SaveChanges() > 0;
+                var IsCreated = _unitOfWork.SaveChanges() > 0;
+                if(!IsCreated)
+                {
+                    _attachmentService.Delete(photoName, "members");
+                    return false;
+                }
+                else
+                {
+                    return IsCreated;
+                }
             }catch
             {
                 return false;
@@ -74,6 +91,7 @@ namespace GymManagmentBLL.Services.Classes
             {
 
                 Id = x.Id,
+                Photo = x.Photo,
                 Name = x.Name,
                 Phone = x.Phone,
                 Email = x.Email,
@@ -85,8 +103,6 @@ namespace GymManagmentBLL.Services.Classes
             return memberViewModels;
             
         }
-
-
 
         public MemberViewModel? GetMemberDetails(int MemberId)
         {
@@ -130,7 +146,6 @@ namespace GymManagmentBLL.Services.Classes
             return memberViewModel;
         }
 
-
         public HealthRecordViewModel? GetMemberHealthRecord(int MemberId)
         {
             var memberHealthRecord = _unitOfWork.GetRepository<HealthRecord>().GetById(MemberId);
@@ -149,8 +164,6 @@ namespace GymManagmentBLL.Services.Classes
             };
 
         }
-
-
 
         public bool UpdateMemberDetails(int memberId, MemberToUpdateViewModel model)
         {
@@ -182,7 +195,6 @@ namespace GymManagmentBLL.Services.Classes
 
         }
 
-
         public MemberToUpdateViewModel? GetMemberToUpdate(int memberId)
         {
 
@@ -208,8 +220,6 @@ namespace GymManagmentBLL.Services.Classes
 
             return memberDetailsView;
         }
-
-
 
         public bool ReomveMember(int MemberId)
         {
@@ -241,7 +251,12 @@ namespace GymManagmentBLL.Services.Classes
                 }
 
                 _unitOfWork.GetRepository<Member>().Delete(Member);
-                return _unitOfWork.SaveChanges() > 0;
+                var IsDeleted = _unitOfWork.SaveChanges() > 0;
+                if(IsDeleted)
+                    _attachmentService.Delete(Member.Photo, "members");
+                
+                return IsDeleted;
+                
             }
             catch 
             {
@@ -250,7 +265,6 @@ namespace GymManagmentBLL.Services.Classes
 
         }
     
-        
         #region Helper Methods
 
         private bool IsExistingEmail(string Email)

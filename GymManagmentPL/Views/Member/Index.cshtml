@@ -1,4 +1,7 @@
-﻿@model IEnumerable<MemberViewModel>
+﻿@{
+    ViewData["Title"] = "Members";
+}
+@model IEnumerable<MemberViewModel>
 
 
             @if (TempData["SeccessMessage"] is not null)
@@ -47,33 +50,35 @@
                                     <th><span>Action</span></th>
                             </tr>
                         </thead>
+                       
                         <tbody>
-                            @foreach (var member in Model)
-                                {
+                          @foreach (var member in Model)
+                          {
                                     
-                            <tr>
-                                <td>
-                                    <span class="avatar">
-                                                @if (member.Photo is null)
-                                                {
-                                                <img src="~/images/User.jpg" alt="Default Avatar" class="rounded-circle"
-                                                    style="width: 40px; height: 40px;" />
+                              <tr>
+                                       <td>
+                                           <span class="avatar">
+                                                       @if (member.Photo is null)
+                                                       {
 
-                                                }
-                                                else
-                                                {
-                                                    <img src="~/images/@member.Photo" alt="Default Avatar" class="rounded-circle"
-                                                         style="width: 40px; height: 40px;" />
-
-                                                }
-                                                }
-                                            </span>
-                                </td>
+                                                       <img src="~/images/User.jpg" alt="Default Avatar" class="rounded-circle"
+                                                           style="width: 40px; height: 40px;" />
+                                  
+                                                       }
+                                                       else
+                                                       {
+                                                           <img src="~/images/members/@member.Photo" alt="Default Avatar" class="rounded-circle"
+                                                                style="width: 40px; height: 40px;" />
+                                  
+                                                       }
+                                         
+                                           </span>
+                                       </td>
                                         <td><span>@member.Name</span></td>
                                         <td><span>@member.Email</span></td>
                                         <td><span>@member.Gender</span></td>
                                         <td><span>@member.Phone</span></td>
-                                <td class="action position-relative">
+                                        <td class="action position-relative">
                                     <div class="dropdown">
                                                 <button class="btn btn-link p-0 border-0" type="button"
                                                         id="dropdownMenuButton-@member.Id" data-bs-toggle="dropdown"
@@ -125,7 +130,7 @@
                                 </td>
                             </tr>
                               
-                        }
+                          }
                          
                         </tbody>
                     </table>
